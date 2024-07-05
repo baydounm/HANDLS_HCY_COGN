@@ -1,0 +1,367 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}E:\16GBBACKUPUSB\BACKUP_USB_SEPTEMBER2014\May Baydoun_folder\HANDLS_PAPER65_HCY_COGN\OUTPUT\TRAJ.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}28 Nov 2023, 10:34:59
+{txt}
+{com}. 
+. capture net from https://www.andrew.cmu.edu/user/bjones/traj
+{txt}
+{com}. capture net install traj
+{txt}
+{com}. help traj
+{txt}
+{com}. 
+. //////STEP 19A: TRAJECTORY OF HOMOCYSTEINE BETWEEN WAVES 1 AND 3///////////////////
+> 
+. use HANDLS_PAPER65_HCY_COGN,clear
+{txt}
+{com}. keep if HNDwave==1
+{txt}(6,188 observations deleted)
+
+{com}. save HANDLS_PAPER65_HCY_COGN_wide, replace
+{txt}{p 0 4 2}
+file {bf}
+HANDLS_PAPER65_HCY_COGN_wide.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. capture drop sampleHCY
+{txt}
+{com}. gen sampleHCY=.
+{txt}(3,720 missing values generated)
+
+{com}. replace sampleHCY=1 if (w1HCys~=. & w1Age~=. & w3Age~=. | w3HCys~=. & w1Age~=. & w3Age~=.)
+{txt}(1,532 real changes made)
+
+{com}. replace sampleHCY=0 if sampleHCY~=1
+{txt}(2,188 real changes made)
+
+{com}. 
+. tab sampleHCY
+
+  {txt}sampleHCY {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}      2,188       58.82       58.82
+{txt}          1 {c |}{res}      1,532       41.18      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}      3,720      100.00
+{txt}
+{com}. tab sampleHCY if HNDwave==1
+
+  {txt}sampleHCY {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}      2,188       58.82       58.82
+{txt}          1 {c |}{res}      1,532       41.18      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}      3,720      100.00
+{txt}
+{com}. tab sampleHCY if HNDwave==3
+{txt}no observations
+
+{com}. 
+. 
+. su w1Age if sampleHCY==1 & HNDwave==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 7}w1Age {c |}{res}      1,532     47.9408    9.101418       30.1       66.2
+{txt}
+{com}. su w3Age if sampleHCY==1 & HNDwave==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 7}w3Age {c |}{res}      1,532    52.50483    9.102529       32.9       70.8
+{txt}
+{com}. 
+. 
+. su w1HCys if sampleHCY==1 & HNDwave==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}w1HCys {c |}{res}      1,428    9.141646    5.160256       2.88     112.59
+{txt}
+{com}. su w3HCys if sampleHCY==1 & HNDwave==1
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}w3HCys {c |}{res}      1,486    10.40221    10.36594       3.87     303.93
+{txt}
+{com}. 
+. 
+. **Log transformation of HCY***
+. 
+. capture drop Lnw1HCys Lnw3HCys  
+{txt}
+{com}. foreach x of varlist w1HCys w3HCys  {c -(}
+{txt}  2{com}. gen Ln`x'=ln(`x')       
+{txt}  3{com}. {c )-}
+{txt}(2,260 missing values generated)
+(2,234 missing values generated)
+
+{com}.  
+. save HANDLS_PAPER65_HCY_COGN_wide, replace
+{txt}{p 0 4 2}
+file {bf}
+HANDLS_PAPER65_HCY_COGN_wide.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. **w1w3HCysTRAJ**
+. 
+. traj if sampleHCY==1, var(Lnw1HCys Lnw3HCys) indep(w1Age w3Age) model(cnorm) max1(400) order(1 1) sigmabygroup detail
+{txt} 
+==== traj stata plugin ====  Jones BL  Nagin DS,  build: May  2 2023
+ 
+3720 observations read.
+2188 excluded by if condition.
+1532 observations used in the trajectory model.
+ 
+Start 
+Parameter estimates
+ 
+    1.96204,    0.00000,    2.42901,    0.00000,    0.35022,    0.35022, 
+   50.00000,   50.00000 
+ 
+              Neg. Log       Percent
+              Likelihood     Decrease
+
+ 
+     0        1079.4422452
+too big of a step
+too big of a step
+     1        1029.2317206   4.65152488
+     2        1027.0233450   0.21456544
+     3        1026.5879937   0.04238962
+     4        1026.3556060   0.02263690
+     5        1026.1602992   0.01902916
+     6        1025.9272433   0.02271145
+     7        1025.6679297   0.02527603
+     8        1007.8950072   1.73281448
+     9         960.9372867   4.65898930
+    10         940.8491834   2.09046975
+    11         900.9439662   4.24140424
+    12         757.2465329  15.94965266
+    13         744.9715394   1.62100360
+    14         735.3427922   1.29249866
+    15         731.5916208   0.51012554
+    16         729.7387351   0.25326776
+    17         728.1844730   0.21298883
+    18         727.4525845   0.10050868
+    19         697.5177221   4.11502591
+    20         686.7944602   1.53734616
+    21         673.7246842   1.90301127
+    22         670.0338273   0.54782866
+    23         659.2231603   1.61345092
+    24         658.9060421   0.04810484
+    25         658.7852911   0.01832598
+    26         658.7584893   0.00406837
+    27         658.6979609   0.00918824
+    28         658.6565942   0.00628007
+    29         642.2026650   2.49810437
+    30         629.3443389   2.00222249
+    31         621.9398879   1.17653414
+    32         621.3331606   0.09755400
+    33         620.8570411   0.07662871
+    34         620.4697300   0.06238329
+    35         620.1592205   0.05004426
+    36         619.8899930   0.04341264
+    37         619.6410739   0.04015535
+    38         619.3666255   0.04429152
+    39         619.0113898   0.05735467
+    40         617.0639657   0.31460232
+    41         611.8540331   0.84430997
+    42         606.5863786   0.86093321
+    43         604.9774538   0.26524249
+    44         604.5991011   0.06253996
+    45         604.5485669   0.00835829
+    46         604.5369635   0.00191936
+    47         604.5354402   0.00025198
+    48         604.5353517   0.00001464
+    49         604.5353508   0.00000014
+    50         604.5353508   0.00000001
+			Maximum Likelihood Estimates
+			Model: Censored Normal (cnorm)
+
+			       Standard       T for H0:
+ Group   Parameter        Estimate        Error     Parameter=0   Prob > |T|
+ 
+ 1       Intercept         1.78122      0.02982          59.738       0.0000
+         Linear            0.00698      0.00057          12.135       0.0000
+ 
+ 2       Intercept         1.57905      0.20475           7.712       0.0000
+         Linear            0.02302      0.00413           5.573       0.0000
+ 
+ 1       Sigma             0.25015      0.00495          50.527       0.0000
+ 2       Sigma             0.48367      0.02685          18.012       0.0000
+ 
+  Group membership
+ 1       (%)              89.32313      1.61715          55.235       0.0000
+ 2       (%)              10.67687      1.61715           6.602       0.0000
+ BIC=  -632.46 (N=2914)  BIC=  -630.21 (N=1532)  AIC=  -611.54  ll=   -604.54
+ 
+Parameter estimates for adding risk factors
+ 
+    1.78122,    0.00698,    1.57905,    0.02302,    0.25015,    0.48367, 
+   -2.12418 
+ 
+Parameter estimates
+ 
+    1.78122,    0.00698,    1.57905,    0.02302,    0.25015,    0.48367, 
+   89.32313,   10.67687 
+ 
+
+ Entropy = 0.797
+
+{com}. 
+. trajplot, xtitle(Age (years)) ytitle(HCY) ci
+{res}{txt}
+{com}. 
+. graph save "FIGURE2.gph",replace
+{res}{txt}file {bf:FIGURE2.gph} saved
+
+{com}. 
+. capture drop R_traj_*
+{txt}
+{com}. 
+. capture rename _traj_Group R_traj_GroupHCY 
+{txt}
+{com}. capture rename _traj_ProbG1 R_traj_ProbG1HCY 
+{txt}
+{com}. capture rename _traj_ProbG2  R_traj_ProbG2HCY
+{txt}
+{com}. 
+. save, replace
+{txt}{p 0 4 2}
+file {bf}
+HANDLS_PAPER65_HCY_COGN_wide.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. corr R_traj_ProbG1HCY Lnw1HCys Lnw3HCys 
+{txt}(obs=1,382)
+
+             {c |} R_t~1HCY Lnw1HCys Lnw3HCys
+{hline 13}{c +}{hline 27}
+R_traj_~1HCY {c |}{res}   1.0000
+    {txt}Lnw1HCys {c |}{res}  -0.6281   1.0000
+    {txt}Lnw3HCys {c |}{res}  -0.7105   0.6861   1.0000
+
+{txt}
+{com}. corr R_traj_ProbG2HCY Lnw1HCys Lnw3HCys 
+{txt}(obs=1,382)
+
+             {c |} R_t~2HCY Lnw1HCys Lnw3HCys
+{hline 13}{c +}{hline 27}
+R_traj_~2HCY {c |}{res}   1.0000
+    {txt}Lnw1HCys {c |}{res}   0.6281   1.0000
+    {txt}Lnw3HCys {c |}{res}   0.7105   0.6861   1.0000
+
+{txt}
+{com}. 
+. bysort R_traj_GroupHCY: su Lnw1HCys Lnw3HCys if (sampleHCY==1 & HNDwave==1)
+
+{txt}{hline}
+-> R_traj_GroupHCY = 1
+
+    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}Lnw1HCys {c |}{res}      1,319    2.097209    .2559475    1.05779   2.895912
+{txt}{space 4}Lnw3HCys {c |}{res}      1,366    2.174376    .2570079   1.353255   2.942332
+
+{txt}{hline}
+-> R_traj_GroupHCY = 2
+
+    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}Lnw1HCys {c |}{res}        109    2.745746    .4580574   2.022871   4.723753
+{txt}{space 4}Lnw3HCys {c |}{res}        120    3.017167    .5094785   2.430098   5.716797
+
+{txt}{hline}
+-> R_traj_GroupHCY = .
+
+    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}Lnw1HCys {c |}{res}          0
+{txt}{space 4}Lnw3HCys {c |}{res}          0
+
+{txt}
+{com}. 
+. 
+. capture drop w1w3HCysTRAJ
+{txt}
+{com}. gen w1w3HCysTRAJ=R_traj_ProbG2HCY
+{txt}(2,188 missing values generated)
+
+{com}. 
+. save HANDLS_PAPER65_HCY_COGN_wide, replace
+{txt}{p 0 4 2}
+file {bf}
+HANDLS_PAPER65_HCY_COGN_wide.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. keep HNDID R_traj* w1w3HCysTRAJ
+{txt}
+{com}. 
+. save HCY_TRAJ_DATA, replace
+{txt}{p 0 4 2}
+file {bf}
+HCY_TRAJ_DATA.dta{rm}
+saved
+{p_end}
+
+{com}. sort HNDID
+{txt}
+{com}. save, replace
+{txt}{p 0 4 2}
+file {bf}
+HCY_TRAJ_DATA.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. use HANDLS_PAPER65_HCY_COGN,clear
+{txt}
+{com}. capture drop _merge
+{txt}
+{com}. sort HNDID
+{txt}
+{com}. save, replace
+{txt}{p 0 4 2}
+file {bf}
+HANDLS_PAPER65_HCY_COGN.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. merge HNDID using HCY_TRAJ_DATA
+{txt}{p}
+(you are using old
+{bf:merge} syntax; see
+{bf:{help merge:[D] merge}} for new syntax)
+{p_end}
+{p 0 4 2}
+variable{txt} HNDID
+does not uniquely identify observations in
+the master data
+{p_end}
+
+{com}. save HANDLS_PAPER65_HCY_COGN, replace
+{txt}{p 0 4 2}
+file {bf}
+HANDLS_PAPER65_HCY_COGN.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. 
+. 
+. capture log close
+{smcl}
+{com}{sf}{ul off}
